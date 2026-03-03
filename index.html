@@ -1,0 +1,755 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+
+// User provided API Key
+const CUSTOM_API_KEY = "AIzaSyDUg3RRAgCkC1SLop-QyIZTG7crtLW0y9k";
+
+import { 
+  Home, 
+  Wallet, 
+  PlusSquare, 
+  Users, 
+  User as UserIcon, 
+  Menu, 
+  Bell, 
+  Search, 
+  MoreHorizontal, 
+  MessageCircle, 
+  Share2, 
+  Heart,
+  ChevronRight,
+  ChevronLeft,
+  ArrowUpRight,
+  ArrowDownLeft,
+  ArrowLeft,
+  History,
+  Repeat,
+  Send,
+  LayoutDashboard,
+  Settings,
+  ShieldCheck,
+  LogOut,
+  ExternalLink,
+  CheckCircle2,
+  Clock,
+  Pause,
+  Trash2,
+  CreditCard,
+  Smartphone,
+  Building2,
+  Bitcoin,
+  Lock,
+  Mail,
+  UserPlus,
+  ArrowRight,
+  Star,
+  Globe,
+  Zap,
+  Image as ImageIcon,
+  Video,
+  Smile,
+  MapPin,
+  X,
+  Camera,
+  Eye
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+// Utility for tailwind classes
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+// --- Components ---
+
+const LandingPage = () => {
+  return (
+    <div className="bg-white min-h-screen">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-12 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">GNG</div>
+            <span className="font-display font-bold text-xl tracking-tight">GNG Social</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link to="/login" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">Login</Link>
+            <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">Join Now</Link>
+          </div>
+        </div>
+      </nav>
+
+      <section className="pt-32 pb-20 px-4">
+        <div className="max-w-7xl mx-auto text-center space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider"
+          >
+            <Zap size={14} />
+            The Future of Social Advertising
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl font-display font-bold text-slate-900 leading-tight"
+          >
+            Grow Your Presence,<br/>
+            <span className="text-blue-600">Earn GNG Points.</span>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg text-slate-500 max-w-2xl mx-auto"
+          >
+            Join the world's first points-based social advertising network. 
+            Boost your brands, connect with experts, and earn rewards every step of the way.
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+          >
+            <Link to="/register" className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 group">
+              Get Started Free
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link to="/login" className="w-full sm:w-auto bg-white text-slate-900 border border-slate-200 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all">
+              View Demo
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-display font-bold text-slate-900">Why Choose GNG Social?</h2>
+            <p className="text-slate-500 mt-2">Everything you need to dominate the social landscape.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { icon: Globe, title: 'Global Reach', desc: 'Connect with millions of users across the globe instantly.' },
+              { icon: ShieldCheck, title: 'Secure Platform', desc: 'Your data and points are protected by industry-leading security.' },
+              { icon: Wallet, title: 'Easy Withdraw', desc: 'Convert your points to PKR and withdraw via JazzCash or EasyPaisa.' },
+            ].map((feature, i) => (
+              <div key={i} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
+                  <feature.icon size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">{feature.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <footer className="py-12 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">G</div>
+            <span className="font-display font-bold text-xl tracking-tight">GNG Social</span>
+          </div>
+          <p className="text-sm text-slate-400">© 2024 GNG Social Media. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onLogin();
+    navigate('/');
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <Link to="/" className="inline-flex items-center gap-2 mb-8">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">G</div>
+            <span className="font-display font-bold text-2xl tracking-tight">GNG Social</span>
+          </Link>
+          <h2 className="text-3xl font-display font-bold text-slate-900">Welcome Back</h2>
+        </div>
+        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <Mail size={16} /> Email Address
+              </label>
+              <input 
+                type="email" 
+                required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <Lock size={16} /> Password
+              </label>
+              <input 
+                type="password" 
+                required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <button 
+              type="submit"
+              className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+            >
+              Sign In
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+const RegisterPage = ({ onRegister }: { onRegister: () => void }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    referral: ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onRegister();
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <Link to="/" className="inline-flex items-center gap-2 mb-8">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">G</div>
+            <span className="font-display font-bold text-2xl tracking-tight">GNG Social</span>
+          </Link>
+          <h2 className="text-3xl font-display font-bold text-slate-900">Join GNG Social</h2>
+          <p className="text-slate-500 mt-2">Start earning points and growing today</p>
+        </div>
+
+        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <UserIcon size={16} /> Full Name
+              </label>
+              <input 
+                type="text" 
+                required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <Mail size={16} /> Email Address
+              </label>
+              <input 
+                type="email" 
+                required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                placeholder="name@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <Lock size={16} /> Password
+              </label>
+              <input 
+                type="password" 
+                required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                placeholder="Min. 8 characters"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <Users size={16} /> Referral Code (Optional)
+              </label>
+              <input 
+                type="text" 
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                placeholder="GNG-XXXXX"
+                value={formData.referral}
+                onChange={(e) => setFormData({...formData, referral: e.target.value})}
+              />
+            </div>
+            <button 
+              type="submit"
+              className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
+            >
+              <UserPlus size={20} />
+              Create Account
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CreatePostPage = ({ user, onPostCreated }: { user: User | null, onPostCreated: (post: Ad) => void }) => {
+  const [content, setContent] = useState('');
+  const [image, setImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePost = () => {
+    if (!content.trim() && !image) return;
+    
+    const newPost: Ad = {
+      id: Date.now(),
+      user_id: user?.id || 0,
+      campaign_name: "User Post",
+      budget_type: "daily",
+      budget_amount: 0,
+      target_audience: "All",
+      title: "",
+      description: content,
+      image_url: image || "",
+      cta_text: "",
+      duration_days: 0,
+      status: "active",
+      created_at: new Date().toISOString()
+    };
+
+    onPostCreated(newPost);
+    alert('Post shared successfully!');
+    setContent('');
+    setImage(null);
+    navigate('/');
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 pt-24 pb-20 px-4">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => navigate(-1)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <ArrowLeft size={20} className="text-slate-600" />
+              </button>
+              <h2 className="text-xl font-display font-bold">Create New Post</h2>
+            </div>
+            <button 
+              onClick={handlePost}
+              disabled={!content.trim() && !image}
+              className={cn(
+                "px-6 py-2 rounded-xl font-bold transition-all shadow-lg",
+                content.trim() || image 
+                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200" 
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
+              )}
+            >
+              Post Now
+            </button>
+          </div>
+          
+          <div className="p-6 space-y-6">
+            <textarea 
+              className="w-full min-h-[150px] text-xl outline-none resize-none placeholder:text-slate-400 font-medium"
+              placeholder={`What's on your mind?`}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+
+            {!image ? (
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full aspect-video bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center gap-4 hover:bg-slate-100 transition-all group overflow-hidden relative"
+              >
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                  <ImageIcon size={32} className="text-blue-600" />
+                </div>
+                <div className="text-center">
+                  <p className="font-bold text-slate-700 text-lg">Select Photos or Videos</p>
+                </div>
+              </button>
+            ) : (
+              <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-lg group">
+                <img src={image} alt="Preview" className="w-full h-auto max-h-[500px] object-cover" />
+                <button 
+                  onClick={() => setImage(null)}
+                  className="absolute top-4 right-4 p-2 bg-black/60 text-white rounded-full hover:bg-black/80 transition-colors backdrop-blur-md"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            )}
+
+            <div className="bg-red-50 p-6 rounded-3xl border border-red-100 space-y-2">
+              <div className="flex items-center gap-2 text-red-600">
+                <ShieldCheck size={20} />
+                <h4 className="font-bold uppercase text-xs tracking-widest">Community Guidelines</h4>
+              </div>
+              <p className="text-sm text-red-700 font-medium leading-relaxed">
+                Koi ghalat post upload na kry apka account block ho jaye ga. Sahi and Islamic post upload kry.
+              </p>
+            </div>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleImageUpload} 
+              accept="image/*" 
+              className="hidden" 
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ChatPage = () => {
+  const [activeTab, setActiveTab] = useState<'chat' | 'notification'>('chat');
+  
+  const chats = [
+    { id: 1, name: 'GNG Support', message: 'Welcome to GNG Social!', time: '10:30 AM', unread: 1 },
+    { id: 2, name: 'Ad Manager', message: 'Your campaign is performing well.', time: 'Yesterday', unread: 0 },
+  ];
+
+  return (
+    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
+      <div className="bg-white p-1 rounded-2xl border border-slate-200 shadow-sm flex">
+        <button 
+          onClick={() => setActiveTab('chat')}
+          className={cn(
+            "flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
+            activeTab === 'chat' ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-slate-500 hover:bg-slate-50"
+          )}
+        >
+          <MessageCircle size={18} /> Chat Inbox
+        </button>
+        <button 
+          onClick={() => setActiveTab('notification')}
+          className={cn(
+            "flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
+            activeTab === 'notification' ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-slate-500 hover:bg-slate-50"
+          )}
+        >
+          <Bell size={18} /> Notifications
+        </button>
+      </div>
+
+      {activeTab === 'chat' ? (
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+          {chats.map((chat) => (
+            <button key={chat.id} className="w-full p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors text-left">
+              <div className="w-14 h-14 bg-slate-100 rounded-2xl overflow-hidden shrink-0">
+                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${chat.name}`} alt={chat.name} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className="font-bold text-slate-900 truncate">{chat.name}</h4>
+                  <span className="text-[10px] font-medium text-slate-400">{chat.time}</span>
+                </div>
+                <p className="text-sm text-slate-500 truncate">{chat.message}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 text-slate-400">No new notifications</div>
+      )}
+    </div>
+  );
+};
+              const MLMPlanDashboard = () => {
+  const navigate = useNavigate();
+  const mlmStats = [
+    { label: 'Direct Referrals', value: '12', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Indirect Team', value: '48', icon: UserPlus, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: 'Team Points', value: '5,400', icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Level Status', value: 'Silver Agent', icon: ShieldCheck, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+  ];
+
+  return (
+    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
+      <div className="flex items-center gap-3 mb-2">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+          <ArrowLeft size={24} className="text-slate-600" />
+        </button>
+        <h2 className="text-2xl font-display font-bold">GNG Agent MLM Plan</h2>
+      </div>
+
+      <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="relative z-10">
+          <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-2">Total Team Earnings</p>
+          <h3 className="text-4xl font-display font-bold">Rs. 12,450.00</h3>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {mlmStats.map((stat, i) => (
+          <div key={i} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4", stat.bg, stat.color)}>
+              <stat.icon size={20} />
+            </div>
+            <p className="text-2xl font-display font-bold text-slate-900">{stat.value}</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const AccountSettingsPage = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
+      <div className="flex items-center gap-3">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+          <ArrowLeft size={24} className="text-slate-600" />
+        </button>
+        <h2 className="text-2xl font-display font-bold">Account Settings</h2>
+      </div>
+
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Display Name</label>
+          <input type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200" defaultValue="User_42" />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+          <input type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200" defaultValue="user@example.com" />
+        </div>
+        <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold">Save Changes</button>
+      </div>
+    </div>
+  );
+};
+
+const Header = () => (
+  <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+    <div className="flex items-center gap-2">
+      <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">G</div>
+      <span className="font-display font-bold text-xl">GNG Social</span>
+    </div>
+    <div className="flex items-center gap-4">
+      <Bell size={20} className="text-slate-600" />
+      <Menu size={24} className="text-slate-600" />
+    </div>
+  </header>
+);
+
+const BottomNav = () => {
+  const location = useLocation();
+  const navItems = [
+    { icon: Home, label: 'Home', path: '/' },
+    { icon: Wallet, label: 'GNG Point', path: '/points' },
+    { icon: PlusSquare, label: 'Create Post', path: '/create-post' },
+    { icon: MessageCircle, label: 'Chat Now', path: '/chat' },
+    { icon: UserIcon, label: 'Account', path: '/account' },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 z-50 flex justify-around items-center">
+      {navItems.map((item) => {
+        const isActive = location.pathname === item.path;
+        return (
+          <Link key={item.path} to={item.path} className={cn("flex flex-col items-center gap-1 p-2", isActive ? "text-blue-600" : "text-slate-400")}>
+            <item.icon size={22} />
+            <span className="text-[10px] font-bold">{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+};
+              const PointsDashboard = ({ user }: { user: User | null }) => {
+  const pkrRate = 0.5;
+  const pkrValue = (user?.points || 0) * pkrRate;
+
+  return (
+    <div className="pt-24 pb-20 px-4 max-w-7xl mx-auto space-y-6">
+      <h2 className="text-2xl font-display font-bold">GNG Point Dashboard</h2>
+      
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-blue-600 rounded-2xl p-4 text-white shadow-lg">
+          <p className="text-white/70 text-[10px] font-bold uppercase tracking-wider">Total GNG Points</p>
+          <h3 className="text-2xl font-display font-bold">{user?.points.toLocaleString()}</h3>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">PKR Value</p>
+          <h3 className="text-2xl font-display font-bold text-slate-900">Rs. {pkrValue.toLocaleString()}</h3>
+        </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Ad Credit Balance</p>
+        <h3 className="text-xl font-display font-bold text-slate-900">
+          Available Balance for Ads: <span className="text-blue-600">Rs. 2,500</span>
+        </h3>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Link to="/deposit" className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <ArrowDownLeft className="text-emerald-600" />
+          <span className="font-bold text-sm">Deposit</span>
+        </Link>
+        <Link to="/withdraw" className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <ArrowUpRight className="text-red-600" />
+          <span className="font-bold text-sm">Withdraw</span>
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        <Link to="/exchange" className="flex flex-col items-center gap-2 p-3 bg-white rounded-xl border border-slate-100 text-xs font-bold"><Repeat size={18} /> Exchange</Link>
+        <Link to="/transfer" className="flex flex-col items-center gap-2 p-3 bg-white rounded-xl border border-slate-100 text-xs font-bold"><Send size={18} /> Transfer</Link>
+        <Link to="/history" className="flex flex-col items-center gap-2 p-3 bg-white rounded-xl border border-slate-100 text-xs font-bold"><History size={18} /> History</Link>
+      </div>
+    </div>
+  );
+};
+
+const WithdrawPage = ({ user }: { user: User | null }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
+      <div className="flex items-center gap-3">
+        <button onClick={() => navigate(-1)}><ArrowLeft /></button>
+        <h2 className="text-xl font-bold">Withdraw Points</h2>
+      </div>
+      <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-4">
+        <input type="number" className="w-full px-4 py-3 rounded-xl border" placeholder="Enter Points" />
+        <select className="w-full px-4 py-3 rounded-xl border">
+          <option>JazzCash</option>
+          <option>EasyPaisa</option>
+          <option>Bank Transfer</option>
+        </select>
+        <input type="text" className="w-full px-4 py-3 rounded-xl border" placeholder="Account Number" />
+        <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold">Withdraw Now</button>
+      </div>
+    </div>
+  );
+};
+
+const HomePage = ({ user, userPosts }: { user: User | null, userPosts: Ad[] }) => {
+  return (
+    <div className="space-y-6 pb-20 pt-24 px-4 max-w-2xl mx-auto">
+      <div className="bg-blue-600 p-6 rounded-3xl text-white flex justify-between items-center shadow-lg">
+        <div>
+          <h3 className="text-xl font-bold">Welcome, {user?.email.split('@')[0]}!</h3>
+          <p className="text-sm opacity-80">You have {user?.points} GNG Points</p>
+        </div>
+        <Zap className="text-amber-300" size={32} />
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-bold text-lg">Recent Feed</h3>
+        {userPosts.map(post => (
+          <div key={post.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 bg-slate-100 rounded-full overflow-hidden">
+                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.user_id}`} alt="User" />
+              </div>
+              <span className="font-bold text-sm">User_{post.user_id}</span>
+            </div>
+            <div className="px-4 pb-4">
+              <p className="text-sm text-slate-700">{post.description}</p>
+              {post.image_url && <img src={post.image_url} className="mt-3 rounded-xl w-full" />}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- MAIN APP COMPONENT ---
+
+export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>({
+    id: 42,
+    email: 'user@example.com',
+    points: 1250,
+    referral_code: 'GNG-786-XYZ',
+    created_at: new Date().toISOString()
+  });
+  const [userPosts, setUserPosts] = useState<Ad[]>([]);
+
+  const handleLogin = () => setIsAuthenticated(true);
+  const handlePostCreated = (newPost: Ad) => setUserPosts(prev => [newPost, ...prev]);
+
+  return (
+    <Router>
+      <div className="min-h-screen bg-slate-50">
+        {isAuthenticated && <Header />}
+        <main>
+          <Routes>
+            <Route path="/" element={isAuthenticated ? <HomePage user={user} userPosts={userPosts} /> : <LandingPage />} />
+            <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+            <Route path="/register" element={<RegisterPage onRegister={handleLogin} />} />
+            {isAuthenticated && (
+              <>
+                <Route path="/points" element={<PointsDashboard user={user} />} />
+                <Route path="/create-post" element={<CreatePostPage user={user} onPostCreated={handlePostCreated} />} />
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/withdraw" element={<WithdrawPage user={user} />} />
+                <Route path="/mlm-plan" element={<MLMPlanDashboard />} />
+                <Route path="/settings" element={<AccountSettingsPage />} />
+                <Route path="/account" element={
+                  <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6 text-center">
+                    <div className="w-24 h-24 bg-white rounded-full mx-auto border-4 border-blue-100 overflow-hidden shadow-lg">
+                      <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`} alt="Profile" />
+                    </div>
+                    <h3 className="text-2xl font-bold">{user?.email.split('@')[0]}</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Link to="/settings" className="p-4 bg-white rounded-2xl border font-bold">Settings</Link>
+                      <Link to="/mlm-plan" className="p-4 bg-blue-600 text-white rounded-2xl font-bold">MLM Plan</Link>
+                    </div>
+                    <button onClick={() => setIsAuthenticated(false)} className="text-red-500 font-bold mt-10">Logout</button>
+                  </div>
+                } />
+              </>
+            )}
+          </Routes>
+        </main>
+        {isAuthenticated && <BottomNav />}
+      </div>
+    </Router>
+  );
+}
