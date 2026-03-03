@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-
-// User provided API Key
-const CUSTOM_API_KEY = "AIzaSyDUg3RRAgCkC1SLop-QyIZTG7crtLW0y9k";
-
+<script>
+  window.apiKey = "AIzaSyDUg3RRAgCkC1SLop-QyIZTG7crtLW0y9k";
+</script>
 import { 
   Home, 
   Wallet, 
@@ -223,7 +220,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
     </div>
   );
 };
-const RegisterPage = ({ onRegister }: { onRegister: () => void }) => {
+ }: { onRegister: () => void }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -495,7 +492,7 @@ const ChatPage = () => {
     </div>
   );
 };
-              const MLMPlanDashboard = () => {
+              {
   const navigate = useNavigate();
   const mlmStats = [
     { label: 'Direct Referrals', value: '12', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
@@ -697,10 +694,7 @@ const HomePage = ({ user, userPosts }: { user: User | null, userPosts: Ad[] }) =
     </div>
   );
 };
-
-// --- MAIN APP COMPONENT ---
-
-export default function App() {
+ {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>({
     id: 42,
