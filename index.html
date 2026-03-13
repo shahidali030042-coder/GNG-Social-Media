@@ -1154,3 +1154,1078 @@
     <!-- Invest Modal -->
     <div id="invest-modal" class="fixed inset-0 z-50 hidden">
        
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaGainTrade - Next-Gen Investment Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
+        
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .page-section { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .page-section.active { display: block; opacity: 1; }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            color: white;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateX(0); }
+        
+        .investment-card { position: relative; overflow: hidden; }
+        .investment-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .investment-card:hover::before { opacity: 1; }
+        
+        /* Form Styles */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-input::placeholder { color: #64748b; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        .step-indicator.completed {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: rgba(71, 85, 105, 0.5);
+            margin: 0 16px;
+        }
+        .step-line.completed { background: #10b981; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('landing')">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl">NovaGain<span class="text-blue-400">Trade</span></span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6">
+                    <button onclick="showPage('landing')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="landing">Home</button>
+                    <button onclick="showPage('investment')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="investment">Invest</button>
+                    <button onclick="showPage('about')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="about">About</button>
+                    <button onclick="showPage('contact')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="contact">Contact</button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="showPage('login')" class="hidden md:block px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">Sign In</button>
+                    <button onclick="showPage('register')" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-sm font-semibold hover:shadow-lg transition-all">Get Started</button>
+                    <button class="md:hidden p-2" onclick="toggleMobileMenu()">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-slate-800">
+            <div class="px-4 pt-2 pb-4 space-y-2">
+                <button onclick="showPage('landing')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Home</button>
+                <button onclick="showPage('investment')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Invest</button>
+                <button onclick="showPage('login')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Sign In</button>
+                <button onclick="showPage('register')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Register</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== HOME / LANDING PAGE ==================== -->
+    <section id="landing" class="page-section active pt-16">
+        <!-- Hero Section -->
+        <div class="relative min-h-screen flex items-center overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"></div>
+            <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-float"></div>
+            <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+            
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8 animate-slide-up">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                        Trusted by 50,000+ investors worldwide
+                    </div>
+                    
+                    <h1 class="font-display text-5xl lg:text-7xl font-bold leading-tight">
+                        Grow Your Wealth <br>
+                        <span class="text-gradient">Intelligently</span>
+                    </h1>
+                    
+                    <p class="text-lg text-slate-400 max-w-xl leading-relaxed">
+                        Advanced investment platform offering secure wallet management, automated ROI tracking, and tiered investment packages designed for maximum returns.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="showPage('register')" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full font-semibold text-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-2">
+                            Start Investing
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="showPage('investment')" class="px-8 py-4 glass rounded-full font-semibold text-lg hover:bg-slate-800 transition-all flex items-center gap-2">
+                            View Plans
+                            <i data-lucide="play-circle" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center gap-8 pt-4">
+                        <div><div class="text-2xl font-bold text-white">$2.4B+</div><div class="text-sm text-slate-500">Assets Managed</div></div>
+                        <div class="w-px h-12 bg-slate-800"></div>
+                        <div><div class="text-2xl font-bold text-white">18.5%</div><div class="text-sm text-slate-500">Avg. Annual ROI</div></div>
+                        <div class="w-px h-12 bg-slate-800"></div>
+                        <div><div class="text-2xl font-bold text-white">99.9%</div><div class="text-sm text-slate-500">Uptime</div></div>
+                    </div>
+                </div>
+                
+                <div class="relative lg:h-[600px] flex items-center justify-center">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -top-10 -left-10 glass-card p-4 rounded-2xl animate-float z-20">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-slate-400">Daily Return</div>
+                                    <div class="text-lg font-bold text-green-400">+$1,240.50</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card rounded-3xl p-6 shadow-2xl">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
+                                    <div>
+                                        <div class="font-semibold">Welcome back, Alex</div>
+                                        <div class="text-sm text-slate-400">Premium Investor</div>
+                                    </div>
+                                </div>
+                                <div class="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">Active</div>
+                            </div>
+                            <div class="h-32 bg-slate-800/50 rounded-xl flex items-end p-4 gap-2 mb-4">
+                                <div class="w-1/6 bg-blue-500/30 rounded-t-lg h-[40%]"></div>
+                                <div class="w-1/6 bg-blue-500/50 rounded-t-lg h-[60%]"></div>
+                                <div class="w-1/6 bg-blue-500/70 rounded-t-lg h-[45%]"></div>
+                                <div class="w-1/6 bg-blue-500 rounded-t-lg h-[80%]"></div>
+                                <div class="w-1/6 bg-purple-500 rounded-t-lg h-[65%]"></div>
+                                <div class="w-1/6 bg-pink-500 rounded-t-lg h-[90%]"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-slate-800/30 p-4 rounded-xl">
+                                    <div class="text-sm text-slate-400 mb-1">Portfolio</div>
+                                    <div class="text-xl font-bold">$124,500</div>
+                                </div>
+                                <div class="bg-slate-800/30 p-4 rounded-xl">
+                                    <div class="text-sm text-slate-400 mb-1">Returns</div>
+                                    <div class="text-xl font-bold text-green-400">+24.5%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="py-24 bg-slate-900/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-display text-3xl lg:text-4xl font-bold mb-4">Why Choose <span class="text-gradient">NovaGainTrade</span></h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 rounded-2xl group cursor-pointer" onclick="showPage('register')">
+                        <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="shield-check" class="w-7 h-7 text-blue-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Secure Wallet System</h3>
+                        <p class="text-slate-400 leading-relaxed">Multi-signature cold storage with real-time monitoring.</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl group cursor-pointer" onclick="showPage('investment')">
+                        <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="pie-chart" class="w-7 h-7 text-purple-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Smart Investment</h3>
+                        <p class="text-slate-400 leading-relaxed">AI-powered portfolio allocation across multiple assets.</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl group cursor-pointer" onclick="showPage('register')">
+                        <div class="w-14 h-14 bg-pink-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="activity" class="w-7 h-7 text-pink-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Real-Time Analytics</h3>
+                        <p class="text-slate-400 leading-relaxed">Live ROI tracking with predictive modeling.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Plans Preview -->
+        <div class="py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-display text-3xl lg:text-4xl font-bold mb-4">Investment <span class="text-gradient">Packages</span></h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="glass-card p-8 rounded-2xl border-t-4 border-blue-500">
+                        <div class="text-blue-400 font-semibold mb-2">Starter</div>
+                        <div class="text-4xl font-bold mb-2">8%</div>
+                        <div class="text-slate-400 text-sm mb-6">Annual Return</div>
+                        <ul class="space-y-3 mb-8 text-slate-300 text-sm">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Min: $500</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Daily payouts</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Basic support</li>
+                        </ul>
+                        <button onclick="showPage('register')" class="w-full py-3 border border-blue-500 text-blue-400 rounded-xl font-semibold hover:bg-blue-500 hover:text-white transition-all">Get Started</button>
+                    </div>
+                    
+                    <div class="glass-card p-8 rounded-2xl border-t-4 border-purple-500 transform scale-105 relative">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-purple-500 text-white text-xs font-bold rounded-full">POPULAR</div>
+                        <div class="text-purple-400 font-semibold mb-2">Growth</div>
+                        <div class="text-4xl font-bold mb-2">15%</div>
+                        <div class="text-slate-400 text-sm mb-6">Annual Return</div>
+                        <ul class="space-y-3 mb-8 text-slate-300 text-sm">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Min: $5,000</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Compound interest</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Priority support</li>
+                        </ul>
+                        <button onclick="showPage('register')" class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl font-semibold hover:shadow-lg transition-all">Get Started</button>
+                    </div>
+                    
+                    <div class="glass-card p-8 rounded-2xl border-t-4 border-pink-500">
+                        <div class="text-pink-400 font-semibold mb-2">Elite</div>
+                        <div class="text-4xl font-bold mb-2">24%</div>
+                        <div class="text-slate-400 text-sm mb-6">Annual Return</div>
+                        <ul class="space-y-3 mb-8 text-slate-300 text-sm">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Min: $25,000</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Dedicated manager</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Instant withdrawals</li>
+                        </ul>
+                        <button onclick="showPage('register')" class="w-full py-3 border border-pink-500 text-pink-400 rounded-xl font-semibold hover:bg-pink-500 hover:text-white transition-all">Get Started</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== REGISTRATION PAGE ==================== -->
+    <section id="register" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-card p-8 md:p-12 rounded-3xl">
+                <div class="text-center mb-8">
+                    <h1 class="font-display text-3xl font-bold mb-2">Create Your <span class="text-gradient">Account</span></h1>
+                    <p class="text-slate-400">Join 50,000+ investors growing their wealth</p>
+                </div>
+
+                <!-- Step Indicator -->
+                <div class="flex items-center justify-center mb-8">
+                    <div class="step-indicator completed" id="step1-indicator">1</div>
+                    <div class="step-line" id="line1"></div>
+                    <div class="step-indicator" id="step2-indicator">2</div>
+                    <div class="step-line" id="line2"></div>
+                    <div class="step-indicator" id="step3-indicator">3</div>
+                </div>
+
+                <!-- Step 1: Basic Info -->
+                <div id="step1" class="space-y-6">
+                    <h3 class="text-xl font-semibold mb-4">Personal Information</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">First Name</label>
+                            <input type="text" class="form-input" placeholder="John" id="reg-firstname">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Last Name</label>
+                            <input type="text" class="form-input" placeholder="Doe" id="reg-lastname">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Email Address</label>
+                        <input type="email" class="form-input" placeholder="john@example.com" id="reg-email">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Phone Number</label>
+                        <input type="tel" class="form-input" placeholder="+1 (555) 000-0000" id="reg-phone">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Password</label>
+                            <input type="password" class="form-input" placeholder="••••••••" id="reg-password">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Confirm Password</label>
+                            <input type="password" class="form-input" placeholder="••••••••" id="reg-confirm">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="reg-terms" class="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600 focus:ring-blue-500">
+                        <label for="reg-terms" class="text-sm text-slate-400">I agree to the <button onclick="showToast('Terms of Service')" class="text-blue-400 hover:underline">Terms of Service</button> and <button onclick="showToast('Privacy Policy')" class="text-blue-400 hover:underline">Privacy Policy</button></label>
+                    </div>
+                    <button onclick="nextStep(2)" class="btn-primary w-full">Continue</button>
+                    <p class="text-center text-sm text-slate-400">Already have an account? <button onclick="showPage('login')" class="text-blue-400 hover:underline font-medium">Sign In</button></p>
+                </div>
+
+                <!-- Step 2: KYC Verification -->
+                <div id="step2" class="space-y-6 hidden">
+                    <h3 class="text-xl font-semibold mb-4">Identity Verification (KYC)</h3>
+                    <div class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-6">
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="info" class="w-5 h-5 text-blue-400 mt-0.5"></i>
+                            <div class="text-sm text-slate-300">
+                                <p class="font-medium text-white mb-1">Why we need this?</p>
+                                <p>To comply with financial regulations and ensure platform security, we require identity verification.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Country of Residence</label>
+                        <select class="form-input" id="reg-country">
+                            <option value="">Select Country</option>
+                            <option value="us">United States</option>
+                            <option value="uk">United Kingdom</option>
+                            <option value="ca">Canada</option>
+                            <option value="au">Australia</option>
+                            <option value="de">Germany</option>
+                            <option value="fr">France</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Date of Birth</label>
+                            <input type="date" class="form-input" id="reg-dob">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">ID Type</label>
+                            <select class="form-input" id="reg-idtype">
+                                <option value="">Select ID Type</option>
+                                <option value="passport">Passport</option>
+                                <option value="driving">Driving License</option>
+                                <option value="national">National ID</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">ID Number</label>
+                        <input type="text" class="form-input" placeholder="Enter your ID number" id="reg-idnumber">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border-2 border-dashed border-slate-600 rounded-xl p-6 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                            <i data-lucide="upload" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+                            <p class="text-sm text-slate-400">Upload ID Front</p>
+                        </div>
+                        <div class="border-2 border-dashed border-slate-600 rounded-xl p-6 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                            <i data-lucide="upload" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+                            <p class="text-sm text-slate-400">Upload ID Back</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="prevStep(1)" class="flex-1 py-3 border border-slate-600 rounded-xl font-semibold hover:bg-slate-800 transition-all">Back</button>
+                        <button onclick="nextStep(3)" class="btn-primary flex-1">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Investment Preferences -->
+                <div id="step3" class="space-y-6 hidden">
+                    <h3 class="text-xl font-semibold mb-4">Investment Preferences</h3>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Preferred Investment Plan</label>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="plan" value="starter" class="hidden peer">
+                                <div class="p-4 rounded-xl border-2 border-slate-700 peer-checked:border-blue-500 peer-checked:bg-blue-500/10 transition-all">
+                                    <div class="text-blue-400 font-semibold">Starter</div>
+                                    <div class="text-2xl font-bold">8%</div>
+                                    <div class="text-xs text-slate-400">$500 min</div>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="plan" value="growth" class="hidden peer" checked>
+                                <div class="p-4 rounded-xl border-2 border-slate-700 peer-checked:border-purple-500 peer-checked:bg-purple-500/10 transition-all">
+                                    <div class="text-purple-400 font-semibold">Growth</div>
+                                    <div class="text-2xl font-bold">15%</div>
+                                    <div class="text-xs text-slate-400">$5,000 min</div>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="plan" value="elite" class="hidden peer">
+                                <div class="p-4 rounded-xl border-2 border-slate-700 peer-checked:border-pink-500 peer-checked:bg-pink-500/10 transition-all">
+                                    <div class="text-pink-400 font-semibold">Elite</div>
+                                    <div class="text-2xl font-bold">24%</div>
+                                    <div class="text-xs text-slate-400">$25,000 min</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Initial Investment Amount ($)</label>
+                        <input type="number" class="form-input" placeholder="5000" min="500" id="reg-amount">
+                        <p class="text-xs text-slate-500 mt-1">You can start with as low as $500</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Referral Code (Optional)</label>
+                        <input type="text" class="form-input" placeholder="Enter referral code if you have one" id="reg-referral">
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="prevStep(2)" class="flex-1 py-3 border border-slate-600 rounded-xl font-semibold hover:bg-slate-800 transition-all">Back</button>
+                        <button onclick="completeRegistration()" class="btn-primary flex-1">Complete Registration</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== LOGIN PAGE ==================== -->
+    <section id="login" class="page-section pt-24 pb-12 min-h-screen flex items-center">
+        <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="glass-card p-8 md:p-10 rounded-3xl">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="log-in" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h1 class="font-display text-2xl font-bold mb-2">Welcome Back</h1>
+                    <p class="text-slate-400 text-sm">Sign in to access your portfolio</p>
+                </div>
+
+                <form onsubmit="handleLogin(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Email Address</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-5 h-5 text-slate-500 absolute left-4 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="email" class="form-input pl-12" placeholder="you@example.com" required id="login-email">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Password</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-5 h-5 text-slate-500 absolute left-4 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="password" class="form-input pl-12" placeholder="••••••••" required id="login-password">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600">
+                            <span class="text-slate-400">Remember me</span>
+                        </label>
+                        <button type="button" onclick="showToast('Password reset coming soon')" class="text-blue-400 hover:underline">Forgot password?</button>
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Sign In</button>
+                </form>
+
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-slate-700"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-slate-900 text-slate-400">Or continue with</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <button onclick="showToast('Google login coming soon')" class="flex items-center justify-center gap-2 py-3 border border-slate-700 rounded-xl hover:bg-slate-800 transition-all">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#EA4335" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#34A853" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                            Google
+                        </button>
+                        <button onclick="showToast('Apple login coming soon')" class="flex items-center justify-center gap-2 py-3 border border-slate-700 rounded-xl hover:bg-slate-800 transition-all">
+                            <i data-lucide="apple" class="w-5 h-5"></i>
+                            Apple
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-center text-sm text-slate-400 mt-6">
+                    Don't have an account? <button onclick="showPage('register')" class="text-blue-400 hover:underline font-medium">Create account</button>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== USER DASHBOARD ==================== -->
+    <section id="dashboard" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold" id="user-avatar">
+                        JD
+                    </div>
+                    <div>
+                        <h1 class="font-display text-2xl font-bold" id="user-name">John Doe</h1>
+                        <p class="text-slate-400 text-sm">Premium Investor • Member since 2026</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="showToast('Notifications')" class="p-3 glass rounded-xl hover:bg-slate-800 transition-all relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button onclick="showPage('settings')" class="p-3 glass rounded-xl hover:bg-slate-800 transition-all">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="showPage('landing')" class="px-4 py-3 glass rounded-xl hover:bg-slate-800 transition-all text-sm font-medium">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-slate-400 text-sm">Total Balance</div>
+                        <div class="p-2 bg-blue-500/20 rounded-lg">
+                            <i data-lucide="wallet" class="w-4 h-4 text-blue-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold">$48,392.50</div>
+                    <div class="text-green-400 text-xs mt-1 flex items-center gap-1">
+                        <i data-lucide="trending-up" class="w-3 h-3"></i> +2.4%
+                    </div>
+                </div>
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-slate-400 text-sm">Active Investments</div>
+                        <div class="p-2 bg-purple-500/20 rounded-lg">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold">3</div>
+                    <div class="text-blue-400 text-xs mt-1">$35,000 committed</div>
+                </div>
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-slate-400 text-sm">Total Earnings</div>
+                        <div class="p-2 bg-green-500/20 rounded-lg">
+                            <i data-lucide="coins" class="w-4 h-4 text-green-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold text-green-400">$3,240</div>
+                    <div class="text-slate-400 text-xs mt-1">Since Jan 2026</div>
+                </div>
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-slate-400 text-sm">Next Payout</div>
+                        <div class="p-2 bg-pink-500/20 rounded-lg">
+                            <i data-lucide="calendar" class="w-4 h-4 text-pink-400"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold">$450</div>
+                    <div class="text-slate-400 text-xs mt-1">In 2 days</div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="grid lg:grid-cols-3 gap-6 mb-8">
+                <!-- Portfolio Chart -->
+                <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold">Portfolio Performance</h3>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400">1D</button>
+                            <button class="px-3 py-1 text-xs rounded-full bg-slate-700 text-slate-400">1W</button>
+                            <button class="px-3 py-1 text-xs rounded-full bg-slate-700 text-slate-400">1M</button>
+                            <button class="px-3 py-1 text-xs rounded-full bg-slate-700 text-slate-400">1Y</button>
+                        </div>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="space-y-6">
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="font-semibold mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="showPage('wallet')" class="w-full p-4 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 transition-all flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="plus" class="w-5 h-5 text-blue-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="font-medium">Deposit Funds</div>
+                                    <div class="text-xs text-slate-400">Add money to your wallet</div>
+                                </div>
+                            </button>
+                            <button onclick="showPage('investment')" class="w-full p-4 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 transition-all flex items-center gap-3">
+                                <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-purple-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="font-medium">New Investment</div>
+                                    <div class="text-xs text-slate-400">Start earning returns</div>
+                                </div>
+                            </button>
+                            <button onclick="showToast('Withdrawal initiated')" class="w-full p-4 rounded-xl bg-green-500/10 hover:bg-green-500/20 transition-all flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="arrow-down-to-line" class="w-5 h-5 text-green-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="font-medium">Withdraw</div>
+                                    <div class="text-xs text-slate-400">Transfer to your bank</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Asset Distribution -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="font-semibold mb-4">Asset Distribution</h3>
+                        <div class="h-40 mb-4">
+                            <canvas id="assetChart"></canvas>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span>USD</span>
+                                <span class="font-medium">45%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500"></span>BTC</span>
+                                <span class="font-medium">30%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-pink-500"></span>ETH</span>
+                                <span class="font-medium">25%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Investments Table -->
+            <div class="glass-card p-6 rounded-2xl mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-semibold text-lg">Active Investments</h3>
+                    <button onclick="showPage('investment')" class="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                        + New Investment
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-slate-400 text-sm border-b border-slate-800">
+                                <th class="pb-3 font-medium">Plan</th>
+                                <th class="pb-3 font-medium">Invested</th>
+                                <th class="pb-3 font-medium">Returns</th>
+                                <th class="pb-3 font-medium">Start Date</th>
+                                <th class="pb-3 font-medium">Status</th>
+                                <th class="pb-3 font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-slate-800/50">
+                                <td class="py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                            <i data-lucide="trending-up" class="w-4 h-4 text-purple-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Growth Plan</div>
+                                            <div class="text-xs text-slate-500">15% APR</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 font-medium">$25,000.00</td>
+                                <td class="py-4 text-green-400">+$312.50</td>
+                                <td class="py-4 text-slate-400">Mar 1, 2026</td>
+                                <td class="py-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">Active</span></td>
+                                <td class="py-4">
+                                    <button onclick="showToast('Reinvest clicked')" class="text-blue-400 hover:underline text-xs">Reinvest</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-slate-800/50">
+                                <td class="py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                            <i data-lucide="trending-up" class="w-4 h-4 text-blue-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Starter Plan</div>
+                                            <div class="text-xs text-slate-500">8% APR</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 font-medium">$10,000.00</td>
+                                <td class="py-4 text-green-400">+$66.67</td>
+                                <td class="py-4 text-slate-400">Feb 15, 2026</td>
+                                <td class="py-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">Active</span></td>
+                                <td class="py-4">
+                                    <button onclick="showToast('Reinvest clicked')" class="text-blue-400 hover:underline text-xs">Reinvest</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-pink-500/20 rounded-lg flex items-center justify-center">
+                                            <i data-lucide="trending-up" class="w-4 h-4 text-pink-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Elite Plan</div>
+                                            <div class="text-xs text-slate-500">24% APR</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 font-medium">$13,392.50</td>
+                                <td class="py-4 text-green-400">+$267.85</td>
+                                <td class="py-4 text-slate-400">Jan 20, 2026</td>
+                                <td class="py-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">Active</span></td>
+                                <td class="py-4">
+                                    <button onclick="showToast('Reinvest clicked')" class="text-blue-400 hover:underline text-xs">Reinvest</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-semibold text-lg">Recent Transactions</h3>
+                    <button onclick="showToast('View all transactions')" class="text-blue-400 text-sm hover:underline">View All</button>
+                </div>
+                <div class="space-y-4" id="dashboard-transactions">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== WALLET PAGE ==================== -->
+    <section id="wallet" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-8">
+                <h1 class="font-display text-3xl font-bold mb-2">Wallet <span class="text-gradient">Management</span></h1>
+                <p class="text-slate-400">Manage your funds and transactions</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Main Balance Card -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="glass-card p-8 rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <div class="text-slate-400 text-sm mb-1">Total Balance</div>
+                                <div class="text-4xl font-bold">$48,392.50</div>
+                                <div class="text-green-400 text-sm mt-2 flex items-center gap-1">
+                                    <i data-lucide="trending-up" class="w-4 h-4"></i> +$1,240.50 (2.6%)
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openDepositModal()" class="px-6 py-3 bg-blue-600 rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> Deposit
+                                </button>
+                                <button onclick="openWithdrawModal()" class="px-6 py-3 bg-slate-700 rounded-xl font-semibold hover:bg-slate-600 transition-all flex items-center gap-2">
+                                    <i data-lucide="minus" class="w-4 h-4"></i> Withdraw
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-700/50">
+                            <div>
+                                <div class="text-sm text-slate-400">Available</div>
+                                <div class="text-xl font-semibold">$35,000.00</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-400">Invested</div>
+                                <div class="text-xl font-semibold text-purple-400">$13,392.50</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-400">Pending</div>
+                                <div class="text-xl font-semibold text-yellow-400">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-semibold">Transaction History</h3>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400">All</button>
+                                <button class="px-3 py-1 text-xs rounded-full bg-slate-700 text-slate-400">Deposit</button>
+                                <button class="px-3 py-1 text-xs rounded-full bg-slate-700 text-slate-400">Withdraw</button>
+                            </div>
+                        </div>
+                        <div class="space-y-3" id="wallet-transactions">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Payment Methods -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold">Payment Methods</h3>
+                            <button onclick="showToast('Add new method')" class="text-blue-400 text-sm hover:underline">+ Add</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+                                <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="credit-card" class="w-5 h-5 text-blue-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm">Visa ending in 4242</div>
+                                    <div class="text-xs text-slate-400">Default</div>
+                                </div>
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+                                <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="bitcoin" class="w-5 h-5 text-orange-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm">Bitcoin Wallet</div>
+                                    <div class="text-xs text-slate-400">bc1q...8x2k</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="font-semibold mb-4">Security</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-green-400"></i>
+                                    <span class="text-sm">2FA Enabled</span>
+                                </div>
+                                <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="lock" class="w-5 h-5 text-green-400"></i>
+                                    <span class="text-sm">Cold Storage</span>
+                                </div>
+                                <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                            </div>
+                            <button onclick="showToast('Security settings')" class="w-full py-2 text-sm text-blue-400 hover:underline text-center">Manage Security</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== INVESTMENT PAGE ==================== -->
+    <section id="investment" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-8">
+                <h1 class="font-display text-3xl font-bold mb-2">Investment <span class="text-gradient">Center</span></h1>
+                <p class="text-slate-400">Choose your investment strategy</p>
+            </div>
+
+            <!-- ROI Calculator -->
+            <div class="glass-card p-8 rounded-2xl mb-8 border border-blue-500/20">
+                <h3 class="font-semibold text-xl mb-6 flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-6 h-6 text-blue-400"></i>
+                    ROI Calculator
+                </h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Investment Amount ($)</label>
+                            <input type="number" id="calc-amount" value="10000" min="500" max="1000000" 
+                                class="form-input text-lg font-semibold" oninput="updateCalculator()">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Duration (Months)</label>
+                            <input type="range" id="calc-duration" min="3" max="36" value="12" 
+                                class="w-full mb-2" oninput="updateCalculator()">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>3m</span>
+                                <span id="duration-display" class="text-blue-400 font-semibold">12 months</span>
+                                <span>36m</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Package Type</label>
+                            <select id="calc-package" onchange="updateCalculator()" class="form-input">
+                                <option value="8">Starter (8% APR)</option>
+                                <option value="15" selected>Growth (15% APR)</option>
+                                <option value="24">Elite (24% APR)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <div class="glass p-6 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-700">
+                                <span class="text-slate-400">Initial Investment</span>
+                                <span class="font-semibold" id="result-initial">$10,000</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-700">
+                                <span class="text-slate-400">Total Return</span>
+                                <span class="font-bold text-green-400 text-xl" id="result-return">+$1,500</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-700">
+                                <span class="text-slate-400">Final Amount</span>
+                                <span class="font-bold text-2xl text-white" id="result-final">$11,500</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-400">Monthly Income</span>
+                                <span class="font-semibold text-blue-400" id="result-monthly">$125</span>
+                            </div>
+                        </div>
+                        <button onclick="openInvestModal()" class="btn-primary w-full mt-6">Invest Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Plans -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="investment-card glass-card p-6 rounded-2xl relative group cursor-pointer" onclick="selectPackage('starter')">
+                    <div class="text-blue-400 font-semibold mb-2">Starter Plan</div>
+                    <div class="text-4xl font-bold mb-1">8%</div>
+                    <div class="text-slate-400 text-sm mb-4">Annual Percentage Yield</div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> $500 - $4,999</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Daily payouts</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Principal return</li>
+                    </ul>
+                    <button class="w-full py-3 border border-blue-500/50 text-blue-400 rounded-xl font-semibold hover:bg-blue-500 hover:text-white transition-all">Select</button>
+                </div>
+
+                <div class="investment-card glass-card p-6 rounded-2xl relative group cursor-pointer border-2 border-purple-500/50" onclick="selectPackage('growth')">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-purple-500 text-white text-xs font-bold rounded-full">POPULAR</div>
+                    <div class="text-purple-400 font-semibold mb-2">Growth Plan</div>
+                    <div class="text-4xl font-bold mb-1">15%</div>
+                    <div class="text-slate-400 text-sm mb-4">Annual Percentage Yield</div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> $5,000 - $24,999</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Compound interest</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Priority support</li>
+                    </ul>
+                    <button class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl font-semibold hover:shadow-lg transition-all">Selected</button>
+                </div>
+
+                <div class="investment-card glass-card p-6 rounded-2xl relative group cursor-pointer" onclick="selectPackage('elite')">
+                    <div class="text-pink-400 font-semibold mb-2">Elite Plan</div>
+                    <div class="text-4xl font-bold mb-1">24%</div>
+                    <div class="text-slate-400 text-sm mb-4">Annual Percentage Yield</div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> $25,000+</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Dedicated manager</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Instant withdrawals</li>
+                    </ul>
+                    <button class="w-full py-3 border border-pink-500/50 text-pink-400 rounded-xl font-semibold hover:bg-pink-500 hover:text-white transition-all">Select</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT PAGE ==================== -->
+    <section id="about" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="font-display text-4xl font-bold mb-4">About <span class="text-gradient">NovaGainTrade</span></h1>
+                <p class="text-slate-400 text-lg">Pioneering the future of digital asset management</p>
+            </div>
+
+            <div class="glass-card p-8 rounded-2xl mb-8">
+                <h2 class="text-2xl font-bold mb-4">Our Mission</h2>
+                <p class="text-slate-300 leading-relaxed mb-6">
+                    NovaGainTrade was founded with a singular vision: to democratize access to high-yield investment opportunities traditionally reserved for institutional investors.
+                </p>
+                <div class="grid sm:grid-cols-3 gap-6 text-center">
+                    <div><div class="text-3xl font-bold text-blue-400 mb-1">$2.4B</div><div class="text-sm text-slate-400">Assets Managed</div></div>
+                    <div><div
