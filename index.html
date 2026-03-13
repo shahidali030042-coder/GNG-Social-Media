@@ -1,749 +1,1155 @@
-<script>
-  window.apiKey = "AIzaSyDUg3RRAgCkC1SLop-QyIZTG7crtLW0y9k";
-</script>
-import { 
-  Home, 
-  Wallet, 
-  PlusSquare, 
-  Users, 
-  User as UserIcon, 
-  Menu, 
-  Bell, 
-  Search, 
-  MoreHorizontal, 
-  MessageCircle, 
-  Share2, 
-  Heart,
-  ChevronRight,
-  ChevronLeft,
-  ArrowUpRight,
-  ArrowDownLeft,
-  ArrowLeft,
-  History,
-  Repeat,
-  Send,
-  LayoutDashboard,
-  Settings,
-  ShieldCheck,
-  LogOut,
-  ExternalLink,
-  CheckCircle2,
-  Clock,
-  Pause,
-  Trash2,
-  CreditCard,
-  Smartphone,
-  Building2,
-  Bitcoin,
-  Lock,
-  Mail,
-  UserPlus,
-  ArrowRight,
-  Star,
-  Globe,
-  Zap,
-  Image as ImageIcon,
-  Video,
-  Smile,
-  MapPin,
-  X,
-  Camera,
-  Eye
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaGainTrade - Next-Gen Investment Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8); }
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient-shift 8s ease infinite;
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 2px;
+        }
+        
+        /* Navigation Active State */
+        .nav-active {
+            color: #60a5fa;
+            position: relative;
+        }
+        .nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            border-radius: 2px;
+        }
+        
+        /* Page Transitions */
+        .page-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .page-section.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            color: white;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        /* Investment Card Glow */
+        .investment-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .investment-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .investment-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 overflow-x-hidden">
 
-// Utility for tailwind classes
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-// --- Components ---
-
-const LandingPage = () => {
-  return (
-    <div className="bg-white min-h-screen">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-12 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">GNG</div>
-            <span className="font-display font-bold text-xl tracking-tight">GNG Social</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/login" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">Login</Link>
-            <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">Join Now</Link>
-          </div>
-        </div>
-      </nav>
-
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-7xl mx-auto text-center space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider"
-          >
-            <Zap size={14} />
-            The Future of Social Advertising
-          </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-display font-bold text-slate-900 leading-tight"
-          >
-            Grow Your Presence,<br/>
-            <span className="text-blue-600">Earn GNG Points.</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-slate-500 max-w-2xl mx-auto"
-          >
-            Join the world's first points-based social advertising network. 
-            Boost your brands, connect with experts, and earn rewards every step of the way.
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
-          >
-            <Link to="/register" className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2 group">
-              Get Started Free
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link to="/login" className="w-full sm:w-auto bg-white text-slate-900 border border-slate-200 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all">
-              View Demo
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-display font-bold text-slate-900">Why Choose GNG Social?</h2>
-            <p className="text-slate-500 mt-2">Everything you need to dominate the social landscape.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { icon: Globe, title: 'Global Reach', desc: 'Connect with millions of users across the globe instantly.' },
-              { icon: ShieldCheck, title: 'Secure Platform', desc: 'Your data and points are protected by industry-leading security.' },
-              { icon: Wallet, title: 'Easy Withdraw', desc: 'Convert your points to PKR and withdraw via JazzCash or EasyPaisa.' },
-            ].map((feature, i) => (
-              <div key={i} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
-                  <feature.icon size={24} />
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('landing')">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-tight">NovaGain<span class="text-blue-400">Trade</span></span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <footer className="py-12 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">G</div>
-            <span className="font-display font-bold text-xl tracking-tight">GNG Social</span>
-          </div>
-          <p className="text-sm text-slate-400">© 2024 GNG Social Media. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onLogin();
-    navigate('/');
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <Link to="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">G</div>
-            <span className="font-display font-bold text-2xl tracking-tight">GNG Social</span>
-          </Link>
-          <h2 className="text-3xl font-display font-bold text-slate-900">Welcome Back</h2>
-        </div>
-        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <Mail size={16} /> Email Address
-              </label>
-              <input 
-                type="email" 
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <Lock size={16} /> Password
-              </label>
-              <input 
-                type="password" 
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <button 
-              type="submit"
-              className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-            >
-              Sign In
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-};
- }: { onRegister: () => void }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    referral: ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onRegister();
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <Link to="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">G</div>
-            <span className="font-display font-bold text-2xl tracking-tight">GNG Social</span>
-          </Link>
-          <h2 className="text-3xl font-display font-bold text-slate-900">Join GNG Social</h2>
-          <p className="text-slate-500 mt-2">Start earning points and growing today</p>
-        </div>
-
-        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <UserIcon size={16} /> Full Name
-              </label>
-              <input 
-                type="text" 
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                placeholder="John Doe"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <Mail size={16} /> Email Address
-              </label>
-              <input 
-                type="email" 
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                placeholder="name@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <Lock size={16} /> Password
-              </label>
-              <input 
-                type="password" 
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                placeholder="Min. 8 characters"
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <Users size={16} /> Referral Code (Optional)
-              </label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                placeholder="GNG-XXXXX"
-                value={formData.referral}
-                onChange={(e) => setFormData({...formData, referral: e.target.value})}
-              />
-            </div>
-            <button 
-              type="submit"
-              className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
-            >
-              <UserPlus size={20} />
-              Create Account
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const CreatePostPage = ({ user, onPostCreated }: { user: User | null, onPostCreated: (post: Ad) => void }) => {
-  const [content, setContent] = useState('');
-  const [image, setImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handlePost = () => {
-    if (!content.trim() && !image) return;
-    
-    const newPost: Ad = {
-      id: Date.now(),
-      user_id: user?.id || 0,
-      campaign_name: "User Post",
-      budget_type: "daily",
-      budget_amount: 0,
-      target_audience: "All",
-      title: "",
-      description: content,
-      image_url: image || "",
-      cta_text: "",
-      duration_days: 0,
-      status: "active",
-      created_at: new Date().toISOString()
-    };
-
-    onPostCreated(newPost);
-    alert('Post shared successfully!');
-    setContent('');
-    setImage(null);
-    navigate('/');
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-20 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => navigate(-1)}
-                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-              >
-                <ArrowLeft size={20} className="text-slate-600" />
-              </button>
-              <h2 className="text-xl font-display font-bold">Create New Post</h2>
-            </div>
-            <button 
-              onClick={handlePost}
-              disabled={!content.trim() && !image}
-              className={cn(
-                "px-6 py-2 rounded-xl font-bold transition-all shadow-lg",
-                content.trim() || image 
-                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200" 
-                  : "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
-              )}
-            >
-              Post Now
-            </button>
-          </div>
-          
-          <div className="p-6 space-y-6">
-            <textarea 
-              className="w-full min-h-[150px] text-xl outline-none resize-none placeholder:text-slate-400 font-medium"
-              placeholder={`What's on your mind?`}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            />
-
-            {!image ? (
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full aspect-video bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center gap-4 hover:bg-slate-100 transition-all group overflow-hidden relative"
-              >
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                  <ImageIcon size={32} className="text-blue-600" />
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="showPage('landing')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="landing">Home</button>
+                    <button onclick="showPage('wallet')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="wallet">Wallet</button>
+                    <button onclick="showPage('investment')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="investment">Invest</button>
+                    <button onclick="showPage('dashboard')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="dashboard">Dashboard</button>
+                    <button onclick="showPage('about')" class="nav-link hover:text-blue-400 transition-colors text-sm font-medium" data-page="about">About</button>
                 </div>
-                <div className="text-center">
-                  <p className="font-bold text-slate-700 text-lg">Select Photos or Videos</p>
+
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleAuthModal()" class="hidden md:block px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">
+                        Sign In
+                    </button>
+                    <button onclick="showPage('investment')" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-sm font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all transform hover:scale-105">
+                        Get Started
+                    </button>
+                    <button class="md:hidden p-2" onclick="toggleMobileMenu()">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
                 </div>
-              </button>
-            ) : (
-              <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-lg group">
-                <img src={image} alt="Preview" className="w-full h-auto max-h-[500px] object-cover" />
-                <button 
-                  onClick={() => setImage(null)}
-                  className="absolute top-4 right-4 p-2 bg-black/60 text-white rounded-full hover:bg-black/80 transition-colors backdrop-blur-md"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            )}
-
-            <div className="bg-red-50 p-6 rounded-3xl border border-red-100 space-y-2">
-              <div className="flex items-center gap-2 text-red-600">
-                <ShieldCheck size={20} />
-                <h4 className="font-bold uppercase text-xs tracking-widest">Community Guidelines</h4>
-              </div>
-              <p className="text-sm text-red-700 font-medium leading-relaxed">
-                Koi ghalat post upload na kry apka account block ho jaye ga. Sahi and Islamic post upload kry.
-              </p>
             </div>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleImageUpload} 
-              accept="image/*" 
-              className="hidden" 
-            />
-          </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-const ChatPage = () => {
-  const [activeTab, setActiveTab] = useState<'chat' | 'notification'>('chat');
-  
-  const chats = [
-    { id: 1, name: 'GNG Support', message: 'Welcome to GNG Social!', time: '10:30 AM', unread: 1 },
-    { id: 2, name: 'Ad Manager', message: 'Your campaign is performing well.', time: 'Yesterday', unread: 0 },
-  ];
-
-  return (
-    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
-      <div className="bg-white p-1 rounded-2xl border border-slate-200 shadow-sm flex">
-        <button 
-          onClick={() => setActiveTab('chat')}
-          className={cn(
-            "flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
-            activeTab === 'chat' ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-slate-500 hover:bg-slate-50"
-          )}
-        >
-          <MessageCircle size={18} /> Chat Inbox
-        </button>
-        <button 
-          onClick={() => setActiveTab('notification')}
-          className={cn(
-            "flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
-            activeTab === 'notification' ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-slate-500 hover:bg-slate-50"
-          )}
-        >
-          <Bell size={18} /> Notifications
-        </button>
-      </div>
-
-      {activeTab === 'chat' ? (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
-          {chats.map((chat) => (
-            <button key={chat.id} className="w-full p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors text-left">
-              <div className="w-14 h-14 bg-slate-100 rounded-2xl overflow-hidden shrink-0">
-                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${chat.name}`} alt={chat.name} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start mb-1">
-                  <h4 className="font-bold text-slate-900 truncate">{chat.name}</h4>
-                  <span className="text-[10px] font-medium text-slate-400">{chat.time}</span>
-                </div>
-                <p className="text-sm text-slate-500 truncate">{chat.message}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 text-slate-400">No new notifications</div>
-      )}
-    </div>
-  );
-};
-              {
-  const navigate = useNavigate();
-  const mlmStats = [
-    { label: 'Direct Referrals', value: '12', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Indirect Team', value: '48', icon: UserPlus, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Team Points', value: '5,400', icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Level Status', value: 'Silver Agent', icon: ShieldCheck, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-  ];
-
-  return (
-    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-3 mb-2">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-          <ArrowLeft size={24} className="text-slate-600" />
-        </button>
-        <h2 className="text-2xl font-display font-bold">GNG Agent MLM Plan</h2>
-      </div>
-
-      <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="relative z-10">
-          <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-2">Total Team Earnings</p>
-          <h3 className="text-4xl font-display font-bold">Rs. 12,450.00</h3>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        {mlmStats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4", stat.bg, stat.color)}>
-              <stat.icon size={20} />
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-slate-800">
+            <div class="px-4 pt-2 pb-4 space-y-2">
+                <button onclick="showPage('landing')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Home</button>
+                <button onclick="showPage('wallet')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Wallet</button>
+                <button onclick="showPage('investment')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Invest</button>
+                <button onclick="showPage('dashboard')" class="block w-full text-left px-3 py-2 hover:bg-slate-800 rounded-lg">Dashboard</button>
             </div>
-            <p className="text-2xl font-display font-bold text-slate-900">{stat.value}</p>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const AccountSettingsPage = () => {
-  const navigate = useNavigate();
-  return (
-    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-          <ArrowLeft size={24} className="text-slate-600" />
-        </button>
-        <h2 className="text-2xl font-display font-bold">Account Settings</h2>
-      </div>
-
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
-        <div>
-          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Display Name</label>
-          <input type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200" defaultValue="User_42" />
         </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
-          <input type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200" defaultValue="user@example.com" />
-        </div>
-        <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold">Save Changes</button>
-      </div>
-    </div>
-  );
-};
-
-const Header = () => (
-  <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
-    <div className="flex items-center gap-2">
-      <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">G</div>
-      <span className="font-display font-bold text-xl">GNG Social</span>
-    </div>
-    <div className="flex items-center gap-4">
-      <Bell size={20} className="text-slate-600" />
-      <Menu size={24} className="text-slate-600" />
-    </div>
-  </header>
-);
-
-const BottomNav = () => {
-  const location = useLocation();
-  const navItems = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: Wallet, label: 'GNG Point', path: '/points' },
-    { icon: PlusSquare, label: 'Create Post', path: '/create-post' },
-    { icon: MessageCircle, label: 'Chat Now', path: '/chat' },
-    { icon: UserIcon, label: 'Account', path: '/account' },
-  ];
-
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 z-50 flex justify-around items-center">
-      {navItems.map((item) => {
-        const isActive = location.pathname === item.path;
-        return (
-          <Link key={item.path} to={item.path} className={cn("flex flex-col items-center gap-1 p-2", isActive ? "text-blue-600" : "text-slate-400")}>
-            <item.icon size={22} />
-            <span className="text-[10px] font-bold">{item.label}</span>
-          </Link>
-        );
-      })}
     </nav>
-  );
-};
-              const PointsDashboard = ({ user }: { user: User | null }) => {
-  const pkrRate = 0.5;
-  const pkrValue = (user?.points || 0) * pkrRate;
 
-  return (
-    <div className="pt-24 pb-20 px-4 max-w-7xl mx-auto space-y-6">
-      <h2 className="text-2xl font-display font-bold">GNG Point Dashboard</h2>
-      
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-blue-600 rounded-2xl p-4 text-white shadow-lg">
-          <p className="text-white/70 text-[10px] font-bold uppercase tracking-wider">Total GNG Points</p>
-          <h3 className="text-2xl font-display font-bold">{user?.points.toLocaleString()}</h3>
-        </div>
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">PKR Value</p>
-          <h3 className="text-2xl font-display font-bold text-slate-900">Rs. {pkrValue.toLocaleString()}</h3>
-        </div>
-      </div>
-
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Ad Credit Balance</p>
-        <h3 className="text-xl font-display font-bold text-slate-900">
-          Available Balance for Ads: <span className="text-blue-600">Rs. 2,500</span>
-        </h3>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <Link to="/deposit" className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-          <ArrowDownLeft className="text-emerald-600" />
-          <span className="font-bold text-sm">Deposit</span>
-        </Link>
-        <Link to="/withdraw" className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-          <ArrowUpRight className="text-red-600" />
-          <span className="font-bold text-sm">Withdraw</span>
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3">
-        <Link to="/exchange" className="flex flex-col items-center gap-2 p-3 bg-white rounded-xl border border-slate-100 text-xs font-bold"><Repeat size={18} /> Exchange</Link>
-        <Link to="/transfer" className="flex flex-col items-center gap-2 p-3 bg-white rounded-xl border border-slate-100 text-xs font-bold"><Send size={18} /> Transfer</Link>
-        <Link to="/history" className="flex flex-col items-center gap-2 p-3 bg-white rounded-xl border border-slate-100 text-xs font-bold"><History size={18} /> History</Link>
-      </div>
-    </div>
-  );
-};
-
-const WithdrawPage = ({ user }: { user: User | null }) => {
-  const navigate = useNavigate();
-  return (
-    <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)}><ArrowLeft /></button>
-        <h2 className="text-xl font-bold">Withdraw Points</h2>
-      </div>
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-4">
-        <input type="number" className="w-full px-4 py-3 rounded-xl border" placeholder="Enter Points" />
-        <select className="w-full px-4 py-3 rounded-xl border">
-          <option>JazzCash</option>
-          <option>EasyPaisa</option>
-          <option>Bank Transfer</option>
-        </select>
-        <input type="text" className="w-full px-4 py-3 rounded-xl border" placeholder="Account Number" />
-        <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold">Withdraw Now</button>
-      </div>
-    </div>
-  );
-};
-
-const HomePage = ({ user, userPosts }: { user: User | null, userPosts: Ad[] }) => {
-  return (
-    <div className="space-y-6 pb-20 pt-24 px-4 max-w-2xl mx-auto">
-      <div className="bg-blue-600 p-6 rounded-3xl text-white flex justify-between items-center shadow-lg">
-        <div>
-          <h3 className="text-xl font-bold">Welcome, {user?.email.split('@')[0]}!</h3>
-          <p className="text-sm opacity-80">You have {user?.points} GNG Points</p>
-        </div>
-        <Zap className="text-amber-300" size={32} />
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="font-bold text-lg">Recent Feed</h3>
-        {userPosts.map(post => (
-          <div key={post.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-slate-100 rounded-full overflow-hidden">
-                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.user_id}`} alt="User" />
-              </div>
-              <span className="font-bold text-sm">User_{post.user_id}</span>
-            </div>
-            <div className="px-4 pb-4">
-              <p className="text-sm text-slate-700">{post.description}</p>
-              {post.image_url && <img src={post.image_url} className="mt-3 rounded-xl w-full" />}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
- {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>({
-    id: 42,
-    email: 'user@example.com',
-    points: 1250,
-    referral_code: 'GNG-786-XYZ',
-    created_at: new Date().toISOString()
-  });
-  const [userPosts, setUserPosts] = useState<Ad[]>([]);
-
-  const handleLogin = () => setIsAuthenticated(true);
-  const handlePostCreated = (newPost: Ad) => setUserPosts(prev => [newPost, ...prev]);
-
-  return (
-    <Router>
-      <div className="min-h-screen bg-slate-50">
-        {isAuthenticated && <Header />}
-        <main>
-          <Routes>
-            <Route path="/" element={isAuthenticated ? <HomePage user={user} userPosts={userPosts} /> : <LandingPage />} />
-            <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-            <Route path="/register" element={<RegisterPage onRegister={handleLogin} />} />
-            {isAuthenticated && (
-              <>
-                <Route path="/points" element={<PointsDashboard user={user} />} />
-                <Route path="/create-post" element={<CreatePostPage user={user} onPostCreated={handlePostCreated} />} />
-                <Route path="/chat" element={<ChatPage />} />
-                <Route path="/withdraw" element={<WithdrawPage user={user} />} />
-                <Route path="/mlm-plan" element={<MLMPlanDashboard />} />
-                <Route path="/settings" element={<AccountSettingsPage />} />
-                <Route path="/account" element={
-                  <div className="pt-24 pb-20 px-4 max-w-2xl mx-auto space-y-6 text-center">
-                    <div className="w-24 h-24 bg-white rounded-full mx-auto border-4 border-blue-100 overflow-hidden shadow-lg">
-                      <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`} alt="Profile" />
+    <!-- LANDING PAGE -->
+    <section id="landing" class="page-section active pt-16">
+        <!-- Hero Section -->
+        <div class="relative min-h-screen flex items-center overflow-hidden">
+            <!-- Background Elements -->
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"></div>
+            <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-float"></div>
+            <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+            
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8 animate-slide-up">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                        Trusted by 50,000+ investors worldwide
                     </div>
-                    <h3 className="text-2xl font-bold">{user?.email.split('@')[0]}</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Link to="/settings" className="p-4 bg-white rounded-2xl border font-bold">Settings</Link>
-                      <Link to="/mlm-plan" className="p-4 bg-blue-600 text-white rounded-2xl font-bold">MLM Plan</Link>
+                    
+                    <h1 class="font-display text-5xl lg:text-7xl font-bold leading-tight">
+                        Grow Your Wealth <br>
+                        <span class="text-gradient">Intelligently</span>
+                    </h1>
+                    
+                    <p class="text-lg text-slate-400 max-w-xl leading-relaxed">
+                        Advanced investment platform offering secure wallet management, automated ROI tracking, and tiered investment packages designed for maximum returns.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="showPage('investment')" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full font-semibold text-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all transform hover:scale-105 flex items-center gap-2">
+                            Start Investing
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="showPage('dashboard')" class="px-8 py-4 glass rounded-full font-semibold text-lg hover:bg-slate-800 transition-all flex items-center gap-2">
+                            View Demo
+                            <i data-lucide="play-circle" class="w-5 h-5"></i>
+                        </button>
                     </div>
-                    <button onClick={() => setIsAuthenticated(false)} className="text-red-500 font-bold mt-10">Logout</button>
-                  </div>
-                } />
-              </>
-            )}
-          </Routes>
-        </main>
-        {isAuthenticated && <BottomNav />}
-      </div>
-    </Router>
-  );
-}
+                    
+                    <div class="flex items-center gap-8 pt-4">
+                        <div>
+                            <div class="text-2xl font-bold text-white">$2.4B+</div>
+                            <div class="text-sm text-slate-500">Assets Managed</div>
+                        </div>
+                        <div class="w-px h-12 bg-slate-800"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-white">18.5%</div>
+                            <div class="text-sm text-slate-500">Avg. Annual ROI</div>
+                        </div>
+                        <div class="w-px h-12 bg-slate-800"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-white">99.9%</div>
+                            <div class="text-sm text-slate-500">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative lg:h-[600px] flex items-center justify-center">
+                    <div class="relative w-full max-w-md">
+                        <!-- Floating Cards -->
+                        <div class="absolute -top-10 -left-10 glass-card p-4 rounded-2xl animate-float z-20">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-slate-400">Daily Return</div>
+                                    <div class="text-lg font-bold text-green-400">+$1,240.50</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="absolute -bottom-5 -right-5 glass-card p-4 rounded-2xl animate-float z-20" style="animation-delay: 1s;">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                                    <i data-lucide="wallet" class="w-5 h-5 text-blue-400"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-slate-400">Total Balance</div>
+                                    <div class="text-lg font-bold text-white">$48,392.00</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Dashboard Preview -->
+                        <div class="glass-card rounded-3xl p-6 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
+                                    <div>
+                                        <div class="font-semibold">Welcome back, Alex</div>
+                                        <div class="text-sm text-slate-400">Premium Investor</div>
+                                    </div>
+                                </div>
+                                <div class="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">Active</div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="h-32 bg-slate-800/50 rounded-xl flex items-end p-4 gap-2">
+                                    <div class="w-1/6 bg-blue-500/30 rounded-t-lg h-[40%]"></div>
+                                    <div class="w-1/6 bg-blue-500/40 rounded-t-lg h-[60%]"></div>
+                                    <div class="w-1/6 bg-blue-500/50 rounded-t-lg h-[45%]"></div>
+                                    <div class="w-1/6 bg-blue-500/60 rounded-t-lg h-[80%]"></div>
+                                    <div class="w-1/6 bg-blue-500/70 rounded-t-lg h-[65%]"></div>
+                                    <div class="w-1/6 bg-blue-500 rounded-t-lg h-[90%]"></div>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-slate-800/30 p-4 rounded-xl">
+                                        <div class="text-sm text-slate-400 mb-1">Portfolio</div>
+                                        <div class="text-xl font-bold">$124,500</div>
+                                    </div>
+                                    <div class="bg-slate-800/30 p-4 rounded-xl">
+                                        <div class="text-sm text-slate-400 mb-1">Returns</div>
+                                        <div class="text-xl font-bold text-green-400">+24.5%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="py-24 bg-slate-900/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-display text-3xl lg:text-4xl font-bold mb-4">Why Choose <span class="text-gradient">NovaGainTrade</span></h2>
+                    <p class="text-slate-400 max-w-2xl mx-auto">Experience institutional-grade investment tools with retail accessibility</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 rounded-2xl group cursor-pointer" onclick="showPage('wallet')">
+                        <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="shield-check" class="w-7 h-7 text-blue-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Secure Wallet System</h3>
+                        <p class="text-slate-400 leading-relaxed">Multi-signature cold storage with real-time monitoring and instant withdrawals.</p>
+                    </div>
+                    
+                    <div class="glass-card p-8 rounded-2xl group cursor-pointer" onclick="showPage('investment')">
+                        <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="pie-chart" class="w-7 h-7 text-purple-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Smart Investment</h3>
+                        <p class="text-slate-400 leading-relaxed">AI-powered portfolio allocation across crypto, stocks, and commodities.</p>
+                    </div>
+                    
+                    <div class="glass-card p-8 rounded-2xl group cursor-pointer" onclick="showPage('dashboard')">
+                        <div class="w-14 h-14 bg-pink-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="activity" class="w-7 h-7 text-pink-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Real-Time Analytics</h3>
+                        <p class="text-slate-400 leading-relaxed">Live ROI tracking with predictive modeling and risk assessment tools.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Tiers Preview -->
+        <div class="py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-display text-3xl lg:text-4xl font-bold mb-4">Investment <span class="text-gradient">Packages</span></h2>
+                    <p class="text-slate-400">Choose a plan that fits your financial goals</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <!-- Basic -->
+                    <div class="glass-card p-8 rounded-2xl border-t-4 border-blue-500">
+                        <div class="text-blue-400 font-semibold mb-2">Starter</div>
+                        <div class="text-4xl font-bold mb-2">8%</div>
+                        <div class="text-slate-400 text-sm mb-6">Annual Return</div>
+                        <ul class="space-y-3 mb-8 text-slate-300">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Min: $500</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Daily payouts</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Basic support</li>
+                        </ul>
+                        <button onclick="showPage('investment')" class="w-full py-3 border border-blue-500 text-blue-400 rounded-xl font-semibold hover:bg-blue-500 hover:text-white transition-all">Select Plan</button>
+                    </div>
+                    
+                    <!-- Premium -->
+                    <div class="glass-card p-8 rounded-2xl border-t-4 border-purple-500 transform scale-105 relative">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-purple-500 text-white text-xs font-bold rounded-full">POPULAR</div>
+                        <div class="text-purple-400 font-semibold mb-2">Growth</div>
+                        <div class="text-4xl font-bold mb-2">15%</div>
+                        <div class="text-slate-400 text-sm mb-6">Annual Return</div>
+                        <ul class="space-y-3 mb-8 text-slate-300">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Min: $5,000</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Compound interest</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Priority support</li>
+                        </ul>
+                        <button onclick="showPage('investment')" class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all">Select Plan</button>
+                    </div>
+                    
+                    <!-- VIP -->
+                    <div class="glass-card p-8 rounded-2xl border-t-4 border-pink-500">
+                        <div class="text-pink-400 font-semibold mb-2">Elite</div>
+                        <div class="text-4xl font-bold mb-2">24%</div>
+                        <div class="text-slate-400 text-sm mb-6">Annual Return</div>
+                        <ul class="space-y-3 mb-8 text-slate-300">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Min: $25,000</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Dedicated manager</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Early access</li>
+                        </ul>
+                        <button onclick="showPage('investment')" class="w-full py-3 border border-pink-500 text-pink-400 rounded-xl font-semibold hover:bg-pink-500 hover:text-white transition-all">Select Plan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WALLET SYSTEM PAGE -->
+    <section id="wallet" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-8">
+                <h1 class="font-display text-3xl font-bold mb-2">Wallet <span class="text-gradient">Management</span></h1>
+                <p class="text-slate-400">Manage your funds across multiple currencies and payment methods</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Balance Cards -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="glass-card p-6 rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="text-slate-400 text-sm">Total Balance</div>
+                                <div class="p-2 bg-blue-500/20 rounded-lg">
+                                    <i data-lucide="wallet" class="w-5 h-5 text-blue-400"></i>
+                                </div>
+                            </div>
+                            <div class="text-3xl font-bold mb-1">$48,392.50</div>
+                            <div class="text-green-400 text-sm flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-4 h-4"></i>
+                                +2.4% this week
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="text-slate-400 text-sm">Available for Withdrawal</div>
+                                <div class="p-2 bg-green-500/20 rounded-lg">
+                                    <i data-lucide="banknote" class="w-5 h-5 text-green-400"></i>
+                                </div>
+                            </div>
+                            <div class="text-3xl font-bold mb-1 text-slate-200">$12,450.00</div>
+                            <div class="text-slate-400 text-sm">Pending: $850.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="font-semibold mb-4">Quick Actions</h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <button onclick="openDepositModal()" class="p-4 rounded-xl bg-slate-800/50 hover:bg-blue-600/20 transition-all text-center group">
+                                <div class="w-12 h-12 mx-auto mb-2 bg-blue-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i data-lucide="arrow-down-left" class="w-6 h-6 text-blue-400"></i>
+                                </div>
+                                <div class="text-sm font-medium">Deposit</div>
+                            </button>
+                            <button onclick="openWithdrawModal()" class="p-4 rounded-xl bg-slate-800/50 hover:bg-purple-600/20 transition-all text-center group">
+                                <div class="w-12 h-12 mx-auto mb-2 bg-purple-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i data-lucide="arrow-up-right" class="w-6 h-6 text-purple-400"></i>
+                                </div>
+                                <div class="text-sm font-medium">Withdraw</div>
+                            </button>
+                            <button onclick="showToast('Transfer feature coming soon')" class="p-4 rounded-xl bg-slate-800/50 hover:bg-pink-600/20 transition-all text-center group">
+                                <div class="w-12 h-12 mx-auto mb-2 bg-pink-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i data-lucide="send" class="w-6 h-6 text-pink-400"></i>
+                                </div>
+                                <div class="text-sm font-medium">Transfer</div>
+                            </button>
+                            <button onclick="showPage('investment')" class="p-4 rounded-xl bg-slate-800/50 hover:bg-green-600/20 transition-all text-center group">
+                                <div class="w-12 h-12 mx-auto mb-2 bg-green-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i data-lucide="plus" class="w-6 h-6 text-green-400"></i>
+                                </div>
+                                <div class="text-sm font-medium">Invest</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-semibold">Recent Transactions</h3>
+                            <button class="text-blue-400 text-sm hover:underline">View All</button>
+                        </div>
+                        <div class="space-y-4" id="transaction-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Currency Distribution -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="font-semibold mb-4">Asset Distribution</h3>
+                        <div class="h-48 mb-4">
+                            <canvas id="walletChart"></canvas>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                    <span class="text-sm">USD</span>
+                                </div>
+                                <span class="text-sm font-medium">45%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                    <span class="text-sm">BTC</span>
+                                </div>
+                                <span class="text-sm font-medium">30%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-pink-500"></div>
+                                    <span class="text-sm">ETH</span>
+                                </div>
+                                <span class="text-sm font-medium">25%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Status -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="font-semibold mb-4">Security Status</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="shield" class="w-5 h-5 text-green-400"></i>
+                                    <span class="text-sm">2FA Enabled</span>
+                                </div>
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="lock" class="w-5 h-5 text-green-400"></i>
+                                    <span class="text-sm">Cold Storage</span>
+                                </div>
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="key" class="w-5 h-5 text-blue-400"></i>
+                                    <span class="text-sm">Last Login</span>
+                                </div>
+                                <span class="text-xs text-slate-400">2 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INVESTMENT PAGE -->
+    <section id="investment" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-8">
+                <h1 class="font-display text-3xl font-bold mb-2">Investment <span class="text-gradient">Center</span></h1>
+                <p class="text-slate-400">Choose your investment strategy and calculate potential returns</p>
+            </div>
+
+            <!-- ROI Calculator -->
+            <div class="glass-card p-8 rounded-2xl mb-8 border border-blue-500/20">
+                <h3 class="font-semibold text-xl mb-6 flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-6 h-6 text-blue-400"></i>
+                    ROI Calculator
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Investment Amount ($)</label>
+                            <input type="number" id="calc-amount" value="10000" min="500" max="1000000" 
+                                class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:outline-none text-white font-semibold text-lg"
+                                oninput="updateCalculator()">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Duration (Months)</label>
+                            <input type="range" id="calc-duration" min="3" max="36" value="12" 
+                                class="w-full mb-2" oninput="updateCalculator()">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>3 months</span>
+                                <span id="duration-display" class="text-blue-400 font-semibold">12 months</span>
+                                <span>36 months</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2">Package Type</label>
+                            <select id="calc-package" onchange="updateCalculator()" 
+                                class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:outline-none text-white">
+                                <option value="8">Starter (8% APR)</option>
+                                <option value="15" selected>Growth (15% APR)</option>
+                                <option value="24">Elite (24% APR)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col justify-center">
+                        <div class="glass p-6 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-700">
+                                <span class="text-slate-400">Initial Investment</span>
+                                <span class="font-semibold" id="result-initial">$10,000</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-700">
+                                <span class="text-slate-400">Total Return</span>
+                                <span class="font-bold text-green-400 text-xl" id="result-return">+$1,500</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-700">
+                                <span class="text-slate-400">Final Amount</span>
+                                <span class="font-bold text-2xl text-white" id="result-final">$11,500</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-400">Monthly Income</span>
+                                <span class="font-semibold text-blue-400" id="result-monthly">$125</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="openInvestModal()" class="mt-6 w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-blue-500/25 transition-all transform hover:scale-[1.02]">
+                            Invest Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Packages -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="investment-card glass-card p-6 rounded-2xl relative group cursor-pointer" onclick="selectPackage('starter')">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="text-blue-400 font-semibold mb-2">Starter Plan</div>
+                    <div class="text-4xl font-bold mb-1">8%</div>
+                    <div class="text-slate-400 text-sm mb-4">Annual Percentage Yield</div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> $500 - $4,999</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Daily payouts</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> Principal return</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i> 3-12 months term</li>
+                    </ul>
+                    <button class="w-full py-3 border border-blue-500/50 text-blue-400 rounded-xl font-semibold hover:bg-blue-500 hover:text-white transition-all">Select Plan</button>
+                </div>
+
+                <div class="investment-card glass-card p-6 rounded-2xl relative group cursor-pointer border-2 border-purple-500/50" onclick="selectPackage('growth')">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-purple-500 text-white text-xs font-bold rounded-full">RECOMMENDED</div>
+                    <div class="absolute top-4 right-4 opacity-100">
+                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="text-purple-400 font-semibold mb-2">Growth Plan</div>
+                    <div class="text-4xl font-bold mb-1">15%</div>
+                    <div class="text-slate-400 text-sm mb-4">Annual Percentage Yield</div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> $5,000 - $24,999</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Compound interest</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> Priority withdrawals</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400"></i> 6-24 months term</li>
+                    </ul>
+                    <button class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all">Selected</button>
+                </div>
+
+                <div class="investment-card glass-card p-6 rounded-2xl relative group cursor-pointer" onclick="selectPackage('elite')">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="text-pink-400 font-semibold mb-2">Elite Plan</div>
+                    <div class="text-4xl font-bold mb-1">24%</div>
+                    <div class="text-slate-400 text-sm mb-4">Annual Percentage Yield</div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> $25,000+</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Dedicated manager</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> Instant withdrawals</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-pink-400"></i> 12-36 months term</li>
+                    </ul>
+                    <button class="w-full py-3 border border-pink-500/50 text-pink-400 rounded-xl font-semibold hover:bg-pink-500 hover:text-white transition-all">Select Plan</button>
+                </div>
+            </div>
+
+            <!-- Active Investments -->
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-semibold text-lg">Your Active Investments</h3>
+                    <button class="text-blue-400 text-sm hover:underline">View History</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-slate-400 text-sm border-b border-slate-800">
+                                <th class="pb-3 font-medium">Package</th>
+                                <th class="pb-3 font-medium">Amount</th>
+                                <th class="pb-3 font-medium">Start Date</th>
+                                <th class="pb-3 font-medium">Return</th>
+                                <th class="pb-3 font-medium">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-slate-800/50">
+                                <td class="py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                            <i data-lucide="trending-up" class="w-4 h-4 text-purple-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Growth Plan</div>
+                                            <div class="text-slate-500 text-xs">15% APR</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 font-medium">$10,000.00</td>
+                                <td class="py-4 text-slate-400">Mar 1, 2026</td>
+                                <td class="py-4 text-green-400">+$125.00</td>
+                                <td class="py-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td class="py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                            <i data-lucide="trending-up" class="w-4 h-4 text-blue-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Starter Plan</div>
+                                            <div class="text-slate-500 text-xs">8% APR</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 font-medium">$2,500.00</td>
+                                <td class="py-4 text-slate-400">Feb 15, 2026</td>
+                                <td class="py-4 text-green-400">+$16.67</td>
+                                <td class="py-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DASHBOARD PAGE -->
+    <section id="dashboard" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="font-display text-3xl font-bold mb-1">Dashboard</h1>
+                    <p class="text-slate-400">Welcome back, here's your portfolio overview</p>
+                </div>
+                <div class="flex gap-3">
+                    <button class="px-4 py-2 glass rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors flex items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        Export Report
+                    </button>
+                    <button onclick="showPage('investment')" class="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                        New Investment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="text-slate-400 text-sm mb-1">Total Portfolio</div>
+                    <div class="text-2xl font-bold">$124,500</div>
+                    <div class="text-green-400 text-xs mt-1 flex items-center gap-1">
+                        <i data-lucide="trending-up" class="w-3 h-3"></i>
+                        +12.5%
+                    </div>
+                </div>
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="text-slate-400 text-sm mb-1">Active Investments</div>
+                    <div class="text-2xl font-bold">3</div>
+                    <div class="text-blue-400 text-xs mt-1">$48,500 committed</div>
+                </div>
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="text-slate-400 text-sm mb-1">Total Earnings</div>
+                    <div class="text-2xl font-bold text-green-400">$8,240</div>
+                    <div class="text-slate-400 text-xs mt-1">Since Jan 2026</div>
+                </div>
+                <div class="glass-card p-5 rounded-2xl">
+                    <div class="text-slate-400 text-sm mb-1">Next Payout</div>
+                    <div class="text-2xl font-bold">$450</div>
+                    <div class="text-slate-400 text-xs mt-1">In 2 days</div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid lg:grid-cols-3 gap-6 mb-8">
+                <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold">Portfolio Performance</h3>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400">1W</button>
+                            <button class="px-3 py-1 text-xs rounded-full bg-slate-700 text-slate-400">1M</button>
+                            <button class="px-3 py-1 text-xs rounded-full bg-slate-700 text-slate-400">1Y</button>
+                        </div>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="font-semibold mb-4">Recent Activity</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center shrink-0">
+                                <i data-lucide="arrow-down-left" class="w-4 h-4 text-green-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">ROI Payout</div>
+                                <div class="text-xs text-slate-400">Growth Plan</div>
+                                <div class="text-xs text-slate-500 mt-1">2 hours ago</div>
+                            </div>
+                            <div class="text-sm font-medium text-green-400">+$125</div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
+                                <i data-lucide="plus" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">New Investment</div>
+                                <div class="text-xs text-slate-400">Elite Plan</div>
+                                <div class="text-xs text-slate-500 mt-1">Yesterday</div>
+                            </div>
+                            <div class="text-sm font-medium text-slate-300">$25,000</div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center shrink-0">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-purple-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Withdrawal</div>
+                                <div class="text-xs text-slate-400">Bank Transfer</div>
+                                <div class="text-xs text-slate-500 mt-1">3 days ago</div>
+                            </div>
+                            <div class="text-sm font-medium text-red-400">-$5,000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Breakdown -->
+            <div class="glass-card p-6 rounded-2xl">
+                <h3 class="font-semibold mb-6">Investment Breakdown</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                Starter Plan (8%)
+                            </span>
+                            <span class="font-medium">$12,500 (25%)</span>
+                        </div>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full" style="width: 25%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                Growth Plan (15%)
+                            </span>
+                            <span class="font-medium">$25,000 (50%)</span>
+                        </div>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-purple-500 rounded-full" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-pink-500"></div>
+                                Elite Plan (24%)
+                            </span>
+                            <span class="font-medium">$12,500 (25%)</span>
+                        </div>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-pink-500 rounded-full" style="width: 25%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT PAGE -->
+    <section id="about" class="page-section pt-24 pb-12 min-h-screen">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="font-display text-4xl font-bold mb-4">About <span class="text-gradient">NovaGainTrade</span></h1>
+                <p class="text-slate-400 text-lg">Pioneering the future of digital asset management since 2020</p>
+            </div>
+
+            <div class="glass-card p-8 rounded-2xl mb-8">
+                <h2 class="text-2xl font-bold mb-4">Our Mission</h2>
+                <p class="text-slate-300 leading-relaxed mb-6">
+                    NovaGainTrade was founded with a singular vision: to democratize access to high-yield investment opportunities traditionally reserved for institutional investors. We combine cutting-edge technology with rigorous risk management to deliver consistent returns.
+                </p>
+                <div class="grid sm:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <div class="text-3xl font-bold text-blue-400 mb-1">$2.4B</div>
+                        <div class="text-sm text-slate-400">Assets Under Management</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-purple-400 mb-1">50K+</div>
+                        <div class="text-sm text-slate-400">Active Investors</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-pink-400 mb-1">12</div>
+                        <div class="text-sm text-slate-400">Countries Served</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card p-6 rounded-2xl">
+                    <i data-lucide="shield-check" class="w-10 h-10 text-blue-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Security First</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        98% of assets stored in cold wallets. Multi-signature authentication, regular security audits, and insurance coverage up to $100M.
+                    </p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <i data-lucide="zap" class="w-10 h-10 text-purple-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Instant Execution</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Automated ROI calculations and instant withdrawal processing. No lock-up periods on earnings—access your money when you need it.
+                    </p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <i data-lucide="users" class="w-10 h-10 text-pink-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Expert Team</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Our team includes veterans from Goldman Sachs, Binance, and Morgan Stanley, bringing decades of combined financial expertise.
+                    </p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl">
+                    <i data-lucide="globe" class="w-10 h-10 text-green-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Global Compliance</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Fully licensed and regulated across multiple jurisdictions. Strict KYC/AML procedures ensuring legal compliance worldwide.
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold mb-6">Contact Us</h2>
+                <div class="grid sm:grid-cols-2 gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="mail" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Email</div>
+                            <div class="font-medium">support@novagaintrade.com</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="phone" class="w-6 h-6 text-purple-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Phone</div>
+                            <div class="font-medium">+1 (888) 555-0123</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="map-pin" class="w-6 h-6 text-pink-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Address</div>
+                            <div class="font-medium">350 Fifth Avenue, New York, NY</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="clock" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-400">Support Hours</div>
+                            <div class="font-medium">24/7 Live Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="font-display font-bold text-xl">NovaGain<span class="text-blue-400">Trade</span></span>
+                    </div>
+                    <p class="text-slate-400 text-sm max-w-sm">
+                        Next-generation investment platform combining traditional finance expertise with blockchain innovation.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Platform</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><button onclick="showPage('investment')" class="hover:text-white transition-colors">Investment Plans</button></li>
+                        <li><button onclick="showPage('wallet')" class="hover:text-white transition-colors">Wallet</button></li>
+                        <li><button onclick="showPage('dashboard')" class="hover:text-white transition-colors">Dashboard</button></li>
+                        <li><button onclick="showToast('Referral program coming soon')" class="hover:text-white transition-colors">Referral Program</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><button onclick="showToast('Terms of Service')" class="hover:text-white transition-colors">Terms of Service</button></li>
+                        <li><button onclick="showToast('Privacy Policy')" class="hover:text-white transition-colors">Privacy Policy</button></li>
+                        <li><button onclick="showToast('Risk Disclosure')" class="hover:text-white transition-colors">Risk Disclosure</button></li>
+                        <li><button onclick="showToast('AML Policy')" class="hover:text-white transition-colors">AML Policy</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-slate-500 text-sm">
+                    © 2026 NovaGainTrade. All rights reserved.
+                </div>
+                <div class="flex gap-4">
+                    <button class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                        <i data-lucide="twitter" class="w-5 h-5"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                        <i data-lucide="linkedin" class="w-5 h-5"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleAuthModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-6">
+            <div class="glass-card p-8 rounded-2xl relative">
+                <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <h2 class="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Email</label>
+                        <input type="email" placeholder="you@example.com" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <button onclick="handleLogin()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold hover:shadow-lg transition-all">
+                        Sign In
+                    </button>
+                    <div class="text-center text-sm text-slate-400">
+                        Don't have an account? <button onclick="showToast('Registration coming soon')" class="text-blue-400 hover:underline">Sign up</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDepositModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-6">
+            <div class="glass-card p-8 rounded-2xl relative">
+                <button onclick="closeDepositModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <h2 class="text-2xl font-bold mb-6">Deposit Funds</h2>
+                
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <button class="p-4 rounded-xl border border-blue-500 bg-blue-500/20 text-center">
+                        <i data-lucide="credit-card" class="w-6 h-6 mx-auto mb-2 text-blue-400"></i>
+                        <div class="text-xs font-medium">Card</div>
+                    </button>
+                    <button class="p-4 rounded-xl border border-slate-700 hover:border-purple-500/50 text-center transition-colors">
+                        <i data-lucide="bitcoin" class="w-6 h-6 mx-auto mb-2 text-purple-400"></i>
+                        <div class="text-xs font-medium">Crypto</div>
+                    </button>
+                    <button class="p-4 rounded-xl border border-slate-700 hover:border-green-500/50 text-center transition-colors">
+                        <i data-lucide="building-2" class="w-6 h-6 mx-auto mb-2 text-green-400"></i>
+                        <div class="text-xs font-medium">Bank</div>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Amount (USD)</label>
+                        <input type="number" id="deposit-amount" placeholder="0.00" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:outline-none text-2xl font-bold">
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="setDepositAmount(100)" class="flex-1 py-2 bg-slate-800 rounded-lg text-sm hover:bg-slate-700">$100</button>
+                        <button onclick="setDepositAmount(500)" class="flex-1 py-2 bg-slate-800 rounded-lg text-sm hover:bg-slate-700">$500</button>
+                        <button onclick="setDepositAmount(1000)" class="flex-1 py-2 bg-slate-800 rounded-lg text-sm hover:bg-slate-700">$1,000</button>
+                    </div>
+                    <button onclick="processDeposit()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold hover:shadow-lg transition-all mt-4">
+                        Confirm Deposit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invest Modal -->
+    <div id="invest-modal" class="fixed inset-0 z-50 hidden">
+       
